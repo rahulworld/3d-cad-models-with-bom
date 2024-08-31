@@ -1,0 +1,18 @@
+diff --git a/node_modules/react-scripts/config/webpack.config.js b/node_modules/react-scripts/config/webpack.config.js
+index e465d8e..d0fffa4 100644
+--- a/node_modules/react-scripts/config/webpack.config.js
++++ b/node_modules/react-scripts/config/webpack.config.js
+@@ -302,7 +302,13 @@ module.exports = function (webpackEnv) {
+         new CssMinimizerPlugin(),
+       ],
+     },
++    // target: ['node'],
+     resolve: {
++      fallback: {
++        path: false,
++        crypto: false,
++        fs: false,
++      },
+       // This allows you to set a fallback for where webpack should look for modules.
+       // We placed these paths second because we want `node_modules` to "win"
+       // if there are any conflicts. This matches Node resolution mechanism.
