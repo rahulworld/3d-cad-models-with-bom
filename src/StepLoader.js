@@ -30,6 +30,7 @@ export async function LoadStep(fileUrl) {
   // read the imported step file
   let fileBuffer = new Uint8Array(buffer)
   let result = occt.ReadStepFile(fileBuffer)
+  console.log("result", result);
 
   // process the geometries of the result
   for (let resultMesh of result.meshes) {

@@ -32,8 +32,8 @@ function StepModel({ url, ...props }) {
   useEffect(() => {
     async function load() {
       // const mainObject = LoadStep('https://github.com/kovacsv/occt-import-js/raw/main/test/testfiles/cax-if/as1_pe_203.stp')
-      const mainObject = await LoadStep('/as1_pe_203.stp')
-      // const mainObject = await LoadStep(url)
+      // const mainObject = await LoadStep('/as1_pe_203.stp')
+      const mainObject = await LoadStep(url)
       console.log('mainObject', mainObject)
       setObj(mainObject)
     }
@@ -61,7 +61,8 @@ export default function App() {
       <StepModel
         scale={[0.1, 0.1, 0.1]}
         // url="/Gripper01.stp"
-        url="/17HM08-1204S.STEP"
+        // url="/17HM08-1204S.STEP"
+        url="/as1_pe_204.stp"
       />
     </Canvas>
   )
