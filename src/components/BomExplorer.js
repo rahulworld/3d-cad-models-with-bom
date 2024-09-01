@@ -45,7 +45,6 @@ const StepModelExplorer = () => {
       });
     }
   }, [rawModel]);
-  console.log("rawModel", rawModel);
 
   const updateModel = useCallback(() => {
     const targetObject = new THREE.Object3D();
