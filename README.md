@@ -13,7 +13,7 @@ This project is a React-based web application designed to allow users to upload 
 
 ![Upload, View and Iteract with BOM](/demo/part1.gif)
 ![Play and Hightlight the component](/demo/part2.gif)
-![Scale and Customise the Model](/demo/part2.gif)
+![Scale and Customise the Model](/demo/part3.gif)
 
 ## Available Scripts
 
