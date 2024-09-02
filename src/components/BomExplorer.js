@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 
 import { Float, OrbitControls } from "@react-three/drei";
@@ -244,19 +244,22 @@ const StepModelExplorer = () => {
               <Canvas shadows camera={{ position: [50, 50, 50], fov: 50 }}>
                 <OrbitControls />
                 <ambientLight intensity={0.5} />
-                <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-                <pointLight position={[-10, -10, -10]} />
-                <group
-                  {...{
-                    scale: [
-                      scaleVector[0] ? scaleVector[0] : 0.1,
-                      scaleVector[1] ? scaleVector[1] : 0.1,
-                      scaleVector[2] ? scaleVector[2] : 0.1,
-                    ],
-                  }}
-                >
-                  <primitive object={stepModelObj} />
-                </group>
+                <directionalLight intensity={0.5} />
+                <Suspense fallback={null}>
+                  <group
+                    {...{
+                      scale: [
+                        scaleVector[0] ? scaleVector[0] : 0.1,
+                        scaleVector[1] ? scaleVector[1] : 0.1,
+                        scaleVector[2] ? scaleVector[2] : 0.1,
+                      ],
+                    }}
+                  >
+                    <primitive object={stepModelObj} />
+                  </group>
+                </Suspense>
+                {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} /> */}
+                {/* <pointLight position={[-10, -10, -10]} /> */}
               </Canvas>
             )}
           </Row>
