@@ -11,6 +11,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.436.0",
     "occt-import-js": "0.0.12",
+    "opencascade.js": "^2.0.0-beta.b5ff984",
     "patch-package": "^8.0.0",
     "react": "18.2.0",
     "react-bootstrap": "^2.10.4",
@@ -19,7 +20,7 @@
     "react-scripts": "5.0.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "three": "0.144.0",
+    "three": "0.124.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -51,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "file-loader": "^6.1.1",
     "tailwindcss": "^3.4.10"
   }
 }

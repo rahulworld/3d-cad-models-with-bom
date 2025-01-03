@@ -1,9 +1,10 @@
 import * as THREE from "three";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
+import initOpenCascade from 'opencascade.js';
 
 import { Float, OrbitControls } from "@react-three/drei";
-import { getUpdatedStepModel, readAndParseStepArrayBuffer } from "./StepLoader";
+import { extractGeometries, extractMeshData, getObjectFromShape, getUpdatedStepModel, initializeOpenCascade, readAndParseStepArrayBuffer } from "./StepLoader";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -12,6 +13,7 @@ import SideBar from "./SideBar";
 import { Form, InputGroup } from "react-bootstrap";
 
 const StepModelExplorer = () => {
+  const mountRef = useRef(null);
   const [stepModelObj, setStepModelObj] = useState(null);
   const [rawModel, setRowModel] = useState(null);
   const [isModelLoading, setIsModelLoading] = useState(false);
@@ -19,13 +21,16 @@ const StepModelExplorer = () => {
   const [uncheckedMeshes, setUncheckedMeshes] = useState([]);
   const [scaleVector, setScaleVector] = useState([0.1, 0.1, 0.1]);
 
-  const handleStepFileUploadChange = (e) => {
+  const handleStepFileUploadChange = async (e) => {
+    // const openCascade = await initializeOpenCascade();
+    const openCascade = await initOpenCascade();
     setIsModelLoading(true);
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(e.target.files[0]);
     fileReader.onload = (e) => {
-      readAndParseStepArrayBuffer(e.target.result).then((parsedStepModel) => {
-        setRowModel(parsedStepModel);
+      readAndParseStepArrayBuffer(openCascade, e.target.result).then(async (parsedStepModel) => {
+        const objectShape = await getObjectFromShape(openCascade, parsedStepModel);
+        setRowModel(objectShape);
       });
     };
   };
@@ -38,11 +43,56 @@ const StepModelExplorer = () => {
   //   };
 
   const resetModel = useCallback(() => {
-    if (rawModel && rawModel.meshes) {
-      getUpdatedStepModel(rawModel).then((transformedStepModel) => {
-        setStepModelObj(transformedStepModel);
-        setIsModelLoading(false);
-      });
+    console.log('HEREER 00000');
+    if (rawModel && rawModel.geometry.faces.length > 0) {
+      // getUpdatedStepModel(rawModel).then((transformedStepModel) => {
+      //   setStepModelObj(transformedStepModel);
+      //   setIsModelLoading(false);
+      // });
+      console.log('HEREER 111111');
+      const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    mountRef.current.appendChild(renderer.domElement);
+
+    // // Convert meshData to BufferGeometry
+    // const geometry = new THREE.BufferGeometry();
+
+    // const vertices = new Float32Array(rawModel.vertices.flat());
+    // const indices = new Uint32Array(rawModel.faces.flat());
+
+    // geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    // geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+    // const material = new THREE.MeshStandardMaterial({ color: 0x0077be, side: THREE.DoubleSide });
+    // const mesh = new THREE.Mesh(geometry, material);
+    // console.log("THREE.Mesh ", rawModel);
+
+    scene.add(rawModel);
+
+    // Add lighting
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(20, 20, 20).normalize();
+    scene.add(light);
+
+    camera.position.z = 20;
+
+    const animate = () => {
+        // requestAnimationFrame(animate);
+        // rawModel.rotation.y += 0.01; // Rotate for better visualization
+        renderer.render(scene, camera);
+    };
+
+    animate();
+
+    // Cleanup
+    return () => {
+        mountRef.current.removeChild(renderer.domElement);
+    };
+
+
     }
   }, [rawModel]);
 
@@ -154,6 +204,7 @@ const StepModelExplorer = () => {
   if (isModelLoading) {
     return (
       <Container fluid>
+        <div ref={mountRef} />
         <Row className="vh-100">
           <Col
             lg={12}
@@ -170,6 +221,7 @@ const StepModelExplorer = () => {
 
   return (
     <Container fluid>
+      <div ref={mountRef} />
       <Row key={"body_row"} className="vh-100">
         <Col
           key={"SideBarCol"}
@@ -241,26 +293,27 @@ const StepModelExplorer = () => {
             {isModelLoading ? (
               <SpinnerLoader />
             ) : (
-              <Canvas shadows camera={{ position: [50, 50, 50], fov: 50 }}>
-                <OrbitControls />
-                <ambientLight intensity={0.5} />
-                <directionalLight intensity={0.5} />
-                <Suspense fallback={null}>
-                  <group
-                    {...{
-                      scale: [
-                        scaleVector[0] ? scaleVector[0] : 0.1,
-                        scaleVector[1] ? scaleVector[1] : 0.1,
-                        scaleVector[2] ? scaleVector[2] : 0.1,
-                      ],
-                    }}
-                  >
-                    <primitive object={stepModelObj} />
-                  </group>
-                </Suspense>
-                {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} /> */}
-                {/* <pointLight position={[-10, -10, -10]} /> */}
-              </Canvas>
+              <div ref={mountRef} />
+              // {<Canvas shadows camera={{ position: [50, 50, 50], fov: 50 }}>
+              //   <OrbitControls />
+              //   <ambientLight intensity={0.5} />
+              //   <directionalLight intensity={0.5} />
+              //   <Suspense fallback={null}>
+              //     <group
+              //       {...{
+              //         scale: [
+              //           scaleVector[0] ? scaleVector[0] : 0.1,
+              //           scaleVector[1] ? scaleVector[1] : 0.1,
+              //           scaleVector[2] ? scaleVector[2] : 0.1,
+              //         ],
+              //       }}
+              //     >
+              //       <primitive object={stepModelObj} />
+              //     </group>
+              //   </Suspense>
+              //   {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} /> */}
+              //   {/* <pointLight position={[-10, -10, -10]} /> */}
+              // </Canvas>}
             )}
           </Row>
         </Col>
